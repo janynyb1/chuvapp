@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficos de Chuva</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <img src="{{ url_for('static', filename='css/image/marker-icon.png') }}" alt="Marker Icon">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        canvas {
+            max-width: 800px;
+            margin: 20px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gráficos de Chuva</h1>
+
+    <canvas id="grafico1"></canvas>
+    <canvas id="grafico2"></canvas>
+    <canvas id="grafico3"></canvas>
+
+    <script>
+        function criarGraficos(dados) {
+            var ctx1 = document.getElementById('grafico1').getContext('2d');
+            var grafico1 = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: dados.dados_grafico1.datas,
+                    datasets: [{
+                        label: 'Posto 80',
+                        data: dados.dados_grafico1.chuvas,
+                        borderColor: 'red',
+                        borderWidth: 1
+                    }]
+                },
+                options: {}
+            });
+
+            
+        }
+
+        window.onload = function() {
+            fetch('/grafico')
+                .then(response => response.json())
+                .then(dados => criarGraficos(dados))
+                .catch(error => console.error('Erro ao obter dados do gráfico:', error));
+        };
+    </script>
+</body>
+</html>
+
+
+    
+    
+

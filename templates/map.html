@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuvas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: row;
+        }
+        .selector {
+            flex: 1;
+        }
+        .map-container {
+            flex: 2;
+            height: 300px; 
+        }
+        #map {
+            height: 100%; 
+            width: 100%; 
+        }
+    </style>
+</head>
+<body>
+    <h1>App Chuvas</h1>
+    <div class="container">
+        <div class="selector">
+            <form id="map-form">
+                <div class="form-group">
+                    <label for="ano">Ano:</label>
+                    <input type="number" id="ano" name="ano" min="1994" max="2025" required>
+                </div>
+                <div class="form-group">
+                    <label for="mes">Mês:</label>
+                    <input type="number" id="mes" name="mes" min="1" max="12" required>
+                </div>
+                <button id="btn-visualizar-mapa" type="submit">Visualizar Mapa</button>
+            </form>
+        </div>
+        <div id="map" class="map-container"></div>
+    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        var map = L.map('map').setView([-23.55, -46.63], 10);
+    
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    
+        function addMarkers(postos) {
+            Object.values(postos).forEach(function(posto) {
+                L.marker([posto.latitude, posto.longitude]).addTo(map)
+                    .bindPopup('Latitude: ' + posto.latitude + '<br>Longitude: ' + posto.longitude);
+            });
+        }
+        
+        $('#map-form').on('submit', function(event) {
+            event.preventDefault();
+            
+            $.ajax({
+                url: '/postos',
+                method: 'GET',
+                success: function(posto) {
+                    addMarkers(posto); 
+                },
+                error: function(error) {
+                    console.log('Erro ao obter dados dos postos pluviométricos:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
